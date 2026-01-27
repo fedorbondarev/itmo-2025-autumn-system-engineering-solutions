@@ -1,0 +1,73 @@
+{
+  "info": {
+    "name": "FastFood Preorder API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {"key": "baseUrl", "value": "http://localhost:8080"},
+    {"key": "userId", "value": "1"},
+    {"key": "orderId", "value": "1"}
+  ],
+  "item": [
+    {
+      "name": "Add to cart",
+      "request": {
+        "method": "POST",
+        "header": [
+          {"key": "Content-Type", "value": "application/json"}
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"dishId\": 1,\n  \"qty\": 1\n}"
+        },
+        "url": "{{baseUrl}}/api/cart/{{userId}}/items"
+      }
+    },
+    {
+      "name": "Create order",
+      "request": {
+        "method": "POST",
+        "header": [
+          {"key": "Content-Type", "value": "application/json"}
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"userId\": 1,\n  \"requestedTime\": \"2026-01-27T13:30:00\"\n}"
+        },
+        "url": "{{baseUrl}}/api/orders"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const json = pm.response.json();",
+              "pm.collectionVariables.set('orderId', json.id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get order",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/orders/{{orderId}}"
+      }
+    },
+    {
+      "name": "Update order status",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {"key": "Content-Type", "value": "application/json"}
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"status\": \"ACCEPTED\"\n}"
+        },
+        "url": "{{baseUrl}}/api/orders/{{orderId}}/status"
+      }
+    }
+  ]
+}

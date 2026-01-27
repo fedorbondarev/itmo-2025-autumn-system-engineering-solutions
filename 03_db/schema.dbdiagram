@@ -1,0 +1,45 @@
+Table ff_user {
+  id bigserial [pk]
+  full_name varchar
+  phone varchar
+  role varchar
+  created_at timestamp
+}
+
+Table dish {
+  id bigserial [pk]
+  name varchar
+  description varchar
+  price numeric
+  available boolean
+}
+
+Table cart {
+  id bigserial [pk]
+  user_id bigint [ref: > ff_user.id]
+  updated_at timestamp
+}
+
+Table cart_item {
+  id bigserial [pk]
+  cart_id bigint [ref: > cart.id]
+  dish_id bigint [ref: > dish.id]
+  qty int
+}
+
+Table ff_order {
+  id bigserial [pk]
+  user_id bigint [ref: > ff_user.id]
+  status varchar
+  requested_time timestamp
+  total_amount numeric
+  created_at timestamp
+}
+
+Table order_item {
+  id bigserial [pk]
+  order_id bigint [ref: > ff_order.id]
+  dish_id bigint [ref: > dish.id]
+  qty int
+  price_at_order numeric
+}

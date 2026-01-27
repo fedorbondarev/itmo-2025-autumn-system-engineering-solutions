@@ -1,0 +1,40 @@
+version: '3.8'
+services:
+  preorder:
+    build:
+      context: ../../
+      dockerfile: 06_infra/docker/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/fastfood
+      SPRING_DATASOURCE_USERNAME: fastfood
+      SPRING_DATASOURCE_PASSWORD: fastfood
+    depends_on:
+      - postgres
+    networks:
+      - preorder_net
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://localhost:8080/health || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: fastfood
+      POSTGRES_USER: fastfood
+      POSTGRES_PASSWORD: fastfood
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - preorder_net
+
+volumes:
+  pgdata:
+
+networks:
+  preorder_net:
+    external: true

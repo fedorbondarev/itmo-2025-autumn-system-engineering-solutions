@@ -1,0 +1,48 @@
+CREATE TABLE ff_user (
+  id BIGSERIAL PRIMARY KEY,
+  full_name VARCHAR(200) NOT NULL,
+  phone VARCHAR(30),
+  role VARCHAR(20) NOT NULL CHECK (role IN ('CLIENT','STAFF')),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+CREATE TABLE dish (
+  id BIGSERIAL PRIMARY KEY,
+  name VARCHAR(200) NOT NULL,
+  description VARCHAR(500),
+  price NUMERIC(10,2) NOT NULL CHECK (price >= 0),
+  available BOOLEAN DEFAULT TRUE NOT NULL
+);
+
+CREATE TABLE cart (
+  id BIGSERIAL PRIMARY KEY,
+  user_id BIGINT NOT NULL REFERENCES ff_user(id),
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+CREATE TABLE cart_item (
+  id BIGSERIAL PRIMARY KEY,
+  cart_id BIGINT NOT NULL REFERENCES cart(id) ON DELETE CASCADE,
+  dish_id BIGINT NOT NULL REFERENCES dish(id),
+  qty INT NOT NULL CHECK (qty > 0)
+);
+
+CREATE TABLE ff_order (
+  id BIGSERIAL PRIMARY KEY,
+  user_id BIGINT NOT NULL REFERENCES ff_user(id),
+  status VARCHAR(20) NOT NULL CHECK (status IN ('CREATED','ACCEPTED','COOKING','READY','ISSUED')),
+  requested_time TIMESTAMP,
+  total_amount NUMERIC(12,2) DEFAULT 0 NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+CREATE TABLE order_item (
+  id BIGSERIAL PRIMARY KEY,
+  order_id BIGINT NOT NULL REFERENCES ff_order(id) ON DELETE CASCADE,
+  dish_id BIGINT NOT NULL REFERENCES dish(id),
+  qty INT NOT NULL CHECK (qty > 0),
+  price_at_order NUMERIC(10,2) NOT NULL
+);
+
+CREATE INDEX idx_order_status ON ff_order(status);
+CREATE INDEX idx_cart_user ON cart(user_id);

@@ -1,0 +1,33 @@
+stages:
+  - build
+  - test
+  - docker
+
+variables:
+  MAVEN_CLI_OPTS: "-Dmaven.test.skip=true"
+
+build:
+  stage: build
+  image: maven:3.9.6-eclipse-temurin-17
+  script:
+    - mvn -q -f 05_app/pom.xml package $MAVEN_CLI_OPTS
+  artifacts:
+    paths:
+      - 05_app/target/*.jar
+
+unit_test:
+  stage: test
+  image: maven:3.9.6-eclipse-temurin-17
+  script:
+    - mvn -q -f 05_app/pom.xml test
+  allow_failure: true
+
+docker_build:
+  stage: docker
+  image: docker:24
+  services:
+    - docker:24-dind
+  script:
+    - docker build -t preorder:1.0.0 -f 06_infra/docker/Dockerfile .
+  only:
+    - main

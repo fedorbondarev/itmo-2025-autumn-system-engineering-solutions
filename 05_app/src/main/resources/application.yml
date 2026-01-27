@@ -1,0 +1,27 @@
+server:
+  port: 8080
+spring:
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/fastfood}
+    username: ${SPRING_DATASOURCE_USERNAME:fastfood}
+    password: ${SPRING_DATASOURCE_PASSWORD:fastfood}
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    defer-datasource-initialization: true
+  sql:
+    init:
+      mode: always
+management:
+  endpoints:
+    web:
+      base-path: /
+      exposure:
+        include: health,info,prometheus
+        exclude: metrics
+      path-mapping:
+        prometheus: metrics
+  endpoint:
+    health:
+      show-details: always
