@@ -8,6 +8,9 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import java.time.Duration;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -48,6 +51,32 @@ public class UiSmokeTest {
     String header = driver.findElement(By.tagName("h1")).getText();
     String h = header.toLowerCase();
     assertTrue(h.contains("предварительный заказ") || h.contains("fastfood preorder"));
+  }
+
+  @Test
+  void createOrderFlow() {
+    driver.get(baseUrl + "/");
+    WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+    wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#menu .card")));
+    driver.findElement(By.cssSelector("#menu button")).click();
+    wait.until(ExpectedConditions.elementToBeClickable(By.id("submitOrder")));
+    var submit = driver.findElement(By.id("submitOrder"));
+    ((org.openqa.selenium.JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", submit);
+    ((org.openqa.selenium.JavascriptExecutor) driver).executeScript("arguments[0].click();", submit);
+    wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("orderResult")));
+    String text = driver.findElement(By.id("orderResult")).getText();
+    assertTrue(text.contains("Заказ №") || text.contains("Заказ №".toLowerCase()));
+  }
+
+  @Test
+  void itemAddedToCart() {
+    driver.get(baseUrl + "/");
+    WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+    wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#menu .card")));
+    driver.findElement(By.cssSelector("#menu button")).click();
+    wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#cart .border")));
+    String cartText = driver.findElement(By.cssSelector("#cart .border")).getText();
+    assertTrue(cartText.contains("шт."));
   }
 
   @Test
